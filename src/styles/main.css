@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+    --dark-purple: #32284A;
+    --purple: #701bcc;
+    --orange: #ff656d;
+}
+
+@theme {
+    --color-dark-purple: #32284A;
+    --color-purple: #701bcc;
+    --color-orange: #ff656d;
+}
+
+body {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #32284A;
+    background: linear-gradient(298deg, var(--dark-purple) 0%, var(--purple) 66%, var(--orange) 100%);
+}
+
+* {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
