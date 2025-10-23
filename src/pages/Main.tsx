@@ -1,25 +1,41 @@
 import React, { useState } from "react";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import SettingsModal from "../components/SettingsModal";
+import { JiraData } from "../components/JiraData";
 
-interface MainProps {
-    user: any;
-}
 
-const Main: React.FC<MainProps> = ({user}) => {
+const Main: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAlertInvalidIssue, setShowAlertInvalidIssue] = useState(false);
+  const [showAlertNoToken, setShowAlertNoToken] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const alertEmptyJiraIssue = () => {
+    return (
+      <div className="fade-in-out fixed bottom-4 right-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 bg-gray-100 text-red-400" role="alert">
+        <span className="font-medium">Issue de Jira vacia!</span> Por favor, introduce una issue de Jira válida.
+      </div>
+    )
+  }
+
+  const alertNoToken = () => {
+    return (
+      <div className="fade-in-out fixed bottom-4 right-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 bg-gray-100 text-red-400" role="alert">
+        <span className="font-medium">Por favor, recarga la pagina y vuelve a hacer login</span>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen min-w-[900px] bg-gray-100">
       <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="bg-white shadow-md rounded-lg">
           <header className="flex justify-between items-center p-6 border-b border-gray-200">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Jira Test Generator</h1>
-            <button 
-              onClick={openModal} 
+            <button
+              onClick={openModal}
               className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               aria-label="Settings"
             >
@@ -28,38 +44,7 @@ const Main: React.FC<MainProps> = ({user}) => {
           </header>
 
           <main className="p-6 flex flex-col gap-4">
-            {/* Input Section */}
-            <section className="flex flex-col sm:flex-row items-stretch gap-3">
-              <input
-                type="text"
-                placeholder="Jira Issue"
-                className="flex-grow px-4 py-2 text-gray-700 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                Fetch Issue
-              </button>
-            </section>
-
-            {/* Issue Info */}
-            <section className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">Issue Details</h2>
-              <div className="space-y-2">
-                <p className="text-gray-600">
-                  <span className="font-semibold text-gray-700">Title:</span> Issue Title Example
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-semibold text-gray-700">Project:</span> PROJECT-KEY
-                </p>
-              </div>
-            </section>
-
-            {/* Description */}
-            <section className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Descripción</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-            </section>
+            <JiraData invalidIssue={setShowAlertInvalidIssue} noToken={setShowAlertNoToken} />
 
             {/* Test Type Selector */}
             <section className="p-6 bg-gray-50 rounded-lg border border-gray-200">
@@ -105,16 +90,22 @@ const Main: React.FC<MainProps> = ({user}) => {
                 </div>
               ))}
             </section>
-            
+
             {/* Submit Button */}
             <section className="flex justify-end">
-                <button className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                    Enviar
-                </button>
-            </section>          </main>
+              <button className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                Enviar
+              </button>
+            </section>
+          </main>
         </div>
       </div>
-      <SettingsModal isOpen={isModalOpen} onClose={closeModal} user={user} />
+
+      {/* Render empty iussue alert */}
+      {showAlertInvalidIssue && alertEmptyJiraIssue()}
+      {showAlertNoToken && alertNoToken()}
+
+      <SettingsModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };

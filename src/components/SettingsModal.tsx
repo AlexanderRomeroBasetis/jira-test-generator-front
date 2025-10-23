@@ -1,56 +1,41 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { userService } from "../api/userService";
+import type { IUserUpdateRequest } from "../interfaces";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: any;
 }
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, user }) => {
+const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const [jiraToken, setJiraToken] = useState("");
   const [jiraServerType, setJiraServerType] = useState("cloud");
   const [jiraUrl, setJiraUrl] = useState("");
   const [geminiToken, setGeminiToken] = useState("");
 
+  useEffect(() => {
+    userService.getUser().then(user => {
+      setJiraToken(user.jiraToken);
+      setJiraServerType(user.jiraVersion === 1 ? "cloud" : "server");
+      setJiraUrl(user.jiraUrl);
+      setGeminiToken(user.geminiToken);
+    });
+  }, [isOpen]);
+
   if (!isOpen) {
     return null;
   }
 
-  const handleSave = async (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log('user', user)
-    console.log('user-credential', user.credential)
-
-    if (!user || !user.credential) {
-      console.error("User not authenticated");
-      alert("Authentication error. Please log in again.");
-      return;
-    }
-
-    const jiraVersion = jiraServerType === "cloud" ? 1 : 0;
-
-    const payload = {
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    const userData: IUserUpdateRequest = {
       geminiToken,
       jiraToken,
       jiraUrl,
-      jiraVersion,
+      jiraVersion: jiraServerType === "cloud" ? 1 : 0,
     };
-
-    try {
-      const response = await axios.post("/api/user", payload, {
-        headers: {
-          'Authorization': `Bearer ${user.credential}`
-        }
-      });
-
-      if(response.status === 200) {
-        console.log("Setting saved");
-        onClose();
-      }
-    } catch(error) {
-      console.error("Error saving settings:", error);
-    }
+    userService.updateUser(userData);
+    onClose();
   }
 
   return (
